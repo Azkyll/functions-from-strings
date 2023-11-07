@@ -18,18 +18,30 @@ namespace functions
 	constexpr double PI = 3.141592653589793238462643;
 
 	typedef std::function<double(double)> func_dd;
-	func_dd id = [](double x) { return x; };
+	typedef std::function<float(float)> func_ff;
+	typedef std::function<int(int)> func_ii;
 
-	func_dd exp = [](double x) { return std::exp(x); };
-	func_dd log = [](double x) { return std::log(x); };
+	template <typename T>
+	std::function<T(T)> id = [](T x) { return x; };
 
-	func_dd cos = [](double x) { return std::cos(x); };
-	func_dd sin = [](double x) { return std::sin(x); };
-	func_dd tan = [](double x) { return std::tan(x); };
+	template <typename T>
+	std::function<T(T)> exp = [](T x) { return std::exp(x); };
+	template <typename T>
+	std::function<T(T)> log = [](T x) { return std::log(x); };
 
-	func_dd cosh = [](double x) { return 0.5 * (std::exp(x) + std::exp(-x)); };
-	func_dd sinh = [](double x) { return 0.5 * (std::exp(x) - std::exp(-x)); };
-	func_dd tanh = [](double x) { return sinh(x) / cosh(x); };
+	template <typename T>
+	std::function<T(T)> cos = [](T x) { return std::cos(x); };
+	template <typename T>
+	std::function<T(T)> sin = [](T x) { return std::sin(x); };
+	template <typename T>
+	std::function<T(T)> tan = [](T x) { return std::tan(x); };
+
+	template <typename T>
+	std::function<T(T)> cosh = [](T x) { return 0.5 * (std::exp(x) + std::exp(-x)); };
+	template <typename T>
+	std::function<T(T)> sinh = [](T x) { return 0.5 * (std::exp(x) - std::exp(-x)); };
+	template <typename T>
+	std::function<T(T)> tanh = [](T x) { return sinh<T>(x) / cosh<T>(x); };
 
 
 	template <typename F0, typename... F>
@@ -74,47 +86,10 @@ namespace functions
 		return Composer2<F...>(f...);
 	}
 
-	inline std::string isolateInner(std::string s)
+	template <typename T>
+	std::function<T(T)> fromString(std::string input)
 	{
-		uint16_t start;
-		uint16_t end;
-		bool isRParenthesisDone = false;
-
-		for (size_t i = s.length(); i != 0; i--)
-		{
-			char current = s[i - 1];
-			if (current == ')')
-				if (!isRParenthesisDone)
-				{
-					end = i - 1;
-					isRParenthesisDone = true;
-				}
-
-			if (current == '(')
-				start = i - 1;
-		}
-
-		return s.substr(start, end - start + 1);
-	}
-
-	inline std::string isolateOuter(std::string s)
-	{
-		uint16_t end;
-
-		for (size_t i = s.length(); i != 0; i--)
-		{
-			char current = s[i - 1];
-
-			if (current == '(')
-				end = i - 1;
-		}
-
-		return s.substr(0, end + 1);
-	}
-
-	inline func_dd fromString(std::string input)
-	{
-		func_dd selected_function = functions::id;
+		std::function<T(T)> selected_function = functions::id<T>;
 
 		// provide function string as ax or f(x)
 		if (input == "x")
@@ -156,55 +131,56 @@ namespace functions
 		}
 
 		if (buffer == "x")
-			selected_function = functions::id;
+			selected_function = functions::id<T>;
 
 
 		if (buffer == "exp")
-			selected_function = functions::exp;
+			selected_function = functions::exp<T>;
 
 		if (buffer == "log")
-			selected_function = functions::log;
+			selected_function = functions::log<T>;
 
 
 		if (buffer == "cos")
-			selected_function = functions::cos;
+			selected_function = functions::cos<T>;
 
 		if (buffer == "sin")
-			selected_function = functions::sin;
+			selected_function = functions::sin<T>;
 
 		if (buffer == "tan")
-			selected_function = functions::tan;
+			selected_function = functions::tan<T>;
 
 
 		if (buffer == "cosh")
-			selected_function = functions::cosh;
+			selected_function = functions::cosh<T>;
 
 		if (buffer == "sinh")
-			selected_function = functions::sinh;
+			selected_function = functions::sinh<T>;
 
 		if (buffer == "tanh")
-			selected_function = functions::tanh;
+			selected_function = functions::tanh<T>;
 
 		if (numBuffer == 0 && buffer != "x")
 		{
 			numBuffer += 1;
 		}
 
-		return [numBuffer, selected_function](double x)
+		return [numBuffer, selected_function](T x)
 		{
-			return numBuffer * selected_function(x);
+			return static_cast<T>(numBuffer * selected_function(x));
 		};
 	}
 
-	inline func_dd fromBuffer(std::vector<std::string> inputBuffer)
+	template <typename T>
+	std::function<T(T)> fromBuffer(std::vector<std::string> inputBuffer)
 	{
-		func_dd current_function = functions::id;
+		std::function<T(T)> current_function = functions::id<T>;
 		for (size_t i = inputBuffer.size(); i > 0; i--)
 		{
-			current_function = compose2(fromString(inputBuffer[i - 1]), current_function);
+			std::string current_string = inputBuffer[i - 1];
+			current_function = compose2(fromString<T>(current_string), current_function);
 		}
 		return current_function;
-
 	}
 
 }

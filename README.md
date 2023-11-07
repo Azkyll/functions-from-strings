@@ -6,9 +6,17 @@ Expected object shapes : "f", "ax" where a is a number, {"f", "g", "x"} or {"f",
 
 ## What does it currently do?
 
-Exactly what stated above... when functions are strictly (double) -> double. I need to rewrite it using templates to get functions from any type to any type (number -> number or number -> function, maybe)
+Exactly what stated above.
 
 You can use any input of the form "a f" where a is a number, i.e. "2cos" is treated as 2 * cos ( x ). Note that {"2", "cos"} gives the same output function, as by default the output function is composed with the identity (so {"2", "cos"} is actually 2 * id composed with cos).
+
+## Currently supported functions
+ - exp
+ - log
+ - cos, sin, tan
+ - cosh, sinh, tanh
+
+Please note that power functions aren't yet implemented, so polynomials can't yet be expressed. While this is unfortunate for a graphical calculator, this will be fixed shortly.
 
 # DISCLAIMER, THANKS AND CREDITS
 
