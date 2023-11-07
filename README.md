@@ -2,7 +2,7 @@
 
 ## Goal
 Create your std::function object from a string, or a vector of strings.
-Expected object shapes : "f", "ax" where a is a number, {"f", "g", "x"} or {"f", "g"}
+Expected object shapes : "f", "ax" where a is a number, {"f", "g", "x"} or {"f", "g"}, {"f", "g", "h"} or any composition order.
 
 ## What does it currently do?
 
